@@ -1,11 +1,10 @@
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author dennis
+ * @author Dennis
  */
 public class VSysUebung3SocketMain {
 	/**
