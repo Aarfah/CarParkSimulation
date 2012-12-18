@@ -33,38 +33,83 @@ public class ServerTaskThread extends Thread {
 		int remotePort = socket.getLocalPort();
 		System.out.print(remoteUrl + " Connected to server on port: " 
 				+ remotePort + "\n");
-		String msg = getReadMessage(socket);
+		String msg = tryReadMessage();
 		System.out.print(remoteUrl + " wrote: " + msg + "\n");
+		
+		//TODO logig to say yes
+		tryMessageToClient("here Server, your can park");
+		
+		//wait on parking
+		msg = tryReadMessage();
+		System.out.print(remoteUrl + " wrote: " + msg + "\n");
+		
+		//wait on leaving
+		msg = tryReadMessage();
+		System.out.print(remoteUrl + " wrote: " + msg + "\n");
+		System.out.print("Communication over.\n");
+	}
+	
+	/**
+	 * Tries to sleep this thread.
+	 * Uses the methode sleep from Thread.java and catch the 
+	 * exception. In case of a throwen exception, a warning will be printed on 
+	 * the terminal.
+	 */
+	public void trySleep() {
+		trySleep(new Random().nextInt(5) * 1000);
+	}
+	
+	/**
+	 * Tries to sleep this thread.
+	 * Uses the methode sleep from Thread.java and catch the 
+	 * exception. In case of a throwen exception, a warning will be printed on 
+	 * the terminal.
+	 * 
+	 * @param n the time to sleep in milliseconds.
+	 */
+	public void trySleep(int n) {
 		try {
-			sleep(new Random().nextInt(5) * 1000);
+			sleep(n);
 		} catch (InterruptedException ex) {
 			System.err.print("No sleep this time\n");
 		}
-		System.out.print(msg + " Sleeped a while.\n\n");
 	}
 	
 	/**
 	 * Returns the read message form the client.
 	 * 
-	 * @param socket the socket to the client.
 	 * @return a string from the client.
 	 */
-	public String getReadMessage(Socket socket) {
+	public String tryReadMessage() {
 		try {
-			return readMessage(socket);
+			return readMessage();
 		} catch (IOException ex) {
 			System.out.println("Cant read message");
 		}
-		return "";
+		return "";//TODO better handling
 	}
 	
 	/**
-	 * Reads a message from the client.
-	 * @param socket
-	 * @return
-	 * @throws IOException 
+	 * Error handler for sending a message to the client.
+	 * 
+	 * @param msg the message for the client.
 	 */
-	public String readMessage(Socket socket) throws IOException {
+	public void tryMessageToClient(String msg) {
+		try {
+			writeMessage(msg);
+		} catch(IOException e){
+			System.out.println("Cant write message.");
+		}
+	}
+	
+	/**
+	 * Reads and returns a message from the client. 
+	 * The message from the client must end by a new line.
+	 * 
+	 * @return the message from a client.
+	 * @throws IOException if inputStream cannot be readed.
+	 */
+	public String readMessage() throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(socket.getInputStream()));
 		String nachricht = bufferedReader.readLine(); 
@@ -74,15 +119,13 @@ public class ServerTaskThread extends Thread {
 	/**
 	 * Wirtes a message to the client.
 	 * 
-	 * @param socket
-	 * @param nachricht
-	 * @throws IOException 
+	 * @param msg the message to send to the client.
+	 * @throws IOException if outputStream cannot be written.
 	 */
-	public void wirteMessage(Socket socket, String nachricht)
-			throws IOException {
+	public void writeMessage(String msg) throws IOException {
 		PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(
 				socket.getOutputStream()));
-		printWriter.print(nachricht);
+		printWriter.println(msg);
 		printWriter.flush();
 	}
 }

@@ -30,8 +30,8 @@ public class Client {
 	public Client(String ip, int port) throws IOException{
 		this.ip = ip; // localhost
 		this.port = port;
-		this.socket = new Socket(ip, port);
-		
+		this.socket = new Socket(ip, port); // verbindet sich mit Server
+		//String sendingMessage = "Hello Server!";
 	}
 
 	/**
@@ -39,9 +39,12 @@ public class Client {
 	 * 
 	 * @throws IOException then somethind went wrong on the communication.
 	 */
-	public void test(String sendingMessage) throws IOException{
-		writeMessage(socket, sendingMessage);
-		String gettedMsg = readMessage(socket);
+	public void handle(String sendingMessage) throws IOException {
+		writeMessage(sendingMessage);
+		System.out.println("sent msg to Server!");
+		String gettedMsg = readMessage(socket); // Wait on yes
+		writeMessage("I park now.");
+		writeMessage("...and now iam leaving, bye bye");
 		System.out.println("MSN From Server: " + gettedMsg);
 	}
 
@@ -52,10 +55,10 @@ public class Client {
 	 * @param msg Message for the Server.
 	 * @throws IOException then messaging to server failed.
 	 */
-	public void writeMessage(Socket socket, String msg) throws IOException {
+	public void writeMessage(String msg) throws IOException {
 		PrintWriter printWriter =
 				new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-		printWriter.print(msg);
+		printWriter.println(msg);
 		printWriter.flush();
 	}
 

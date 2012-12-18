@@ -1,14 +1,8 @@
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
-<<<<<<< HEAD
  * @author Dennis Hägler
-=======
- * @author Dennis
->>>>>>> dbc7c8775eca91d9e31db5c8421472870b2ad960
  */
 public class VSysUebung3SocketMain {
 	/**
@@ -21,7 +15,7 @@ public class VSysUebung3SocketMain {
 						ip +":" + port);
 		try {
 			Client client = new Client(ip, port);
-			client.test(args[0]);
+			client.handle(args[0]+"\n");
 			System.out.println("Conected to: " + ip + ":" + port);
 		} catch (IOException ex) {
 			System.err.println("Connection to: " + ip + ":" + port + " failed.");
