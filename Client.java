@@ -10,7 +10,7 @@ import java.net.Socket;
  * 
  * @author Dennis Hägler
  */
-public class Client {
+public class Client extends Thread{
 	/**Ip to connect to server.*/
 	private String ip;
 
@@ -25,14 +25,22 @@ public class Client {
 	 * If the client cant connect to a server, a IOException will be throwen.
 	 *
 	 * @param ip ip to connect on the server.
-	 * @param port port to connect in combination with the ip on a server.
+	 *param port port to connect in combination with the ip on a server.
 	 */
 	public Client(String ip, int port) throws IOException{
 		this.ip = ip; // localhost
 		this.port = port;
-		this.socket = new Socket(ip, port); // verbindet sich mit Server
-		//String sendingMessage = "Hello Server!";
+		this.socket = new Socket(ip, port);
+		start();
 	}
+	
+	public void run() {
+		try {
+			handle(this.ip);
+		} catch(IOException e) {
+			System.err.println(ip + " does not run.");
+		}
+	} 
 
 	/**
 	 * Tests to communicate with a socket to a server.
@@ -46,6 +54,7 @@ public class Client {
 		writeMessage("I park now.");
 		writeMessage("...and now iam leaving, bye bye");
 		System.out.println("MSN From Server: " + gettedMsg);
+		System.out.println("---------------------------------");
 	}
 
 	/**

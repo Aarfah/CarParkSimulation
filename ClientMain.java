@@ -1,30 +1,29 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author Dennis Hägler
  */
 public class ClientMain {
-	/**
-	 * @param args the command line arguments
-	 */
+	//TODO Zeit bis Clientstartet
 	public static void main(String[] args) {
 		String ip = "127.0.0.1";
 		int port = 1337;
-		String tag = getStringFromArgs(args[0], 0);
-		String arrivaleTime = getStringFromArgs(args[0], 1);
-		String getParkingTime = getStringFromArgs(args[0], 2);
-		
-		System.out.println("\nStarted new client " + tag +" and connecting to: "+
-						ip +":" + port);
+		String tag = getTag(args[0]);
+		int arrivaleTime = getArrivaleTime(args[0]);
+		int parkTime = getParkingTime(args[0]);
+		System.out.println("args 0 " + args[0]);
+		System.out.println("--------------------------------------------");
+		System.out.println("\nMy Tag: " + tag 
+				+ " my time: " + arrivaleTime 
+				+ " my stay time:" + parkTime);
+		System.out.println("\nStarted new client " 
+				+ tag 
+				+" and connecting to: "
+				+ ip + ":" + port);
 		try {
 			Client client = new Client(ip, port);
-			client.handle(tag + "\n");
+			//client.handle(tag + "\n");
 			System.out.println("Conected to: " + ip + ":" + port);
 		} catch (IOException ex) {
 			System.err.println("Connection to: " + ip + ":" + port + " failed.");
@@ -35,9 +34,8 @@ public class ClientMain {
 		return getStringFromArgs(args, 0);
 	}
 	
-	
 	private static int getArrivaleTime(String args) {
-		return Integer.parseInt(getStringFromArgs(args, 1));
+		return getTime(getStringFromArgs(args, 1));
 	}
 	
 	private static int getParkingTime(String args) {
@@ -52,7 +50,11 @@ public class ClientMain {
 	private static int getTime(String s) {
 		String[] result = s.split(":");
 		int hour = Integer.parseInt(result[0]) * 60;
-		int minute = Integer.parseInt(result[1]) * 60;
+		int minute = 0;
+		try {
+			minute = Integer.parseInt(result[1]) * 60;
+		} catch(ArrayIndexOutOfBoundsException oob) {
+		}
 		return hour + minute;
 	}
 }

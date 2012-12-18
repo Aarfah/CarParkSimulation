@@ -35,7 +35,7 @@ public class ServerTaskThread extends Thread {
 				+ remotePort + "\n");
 		String msg = tryReadMessage();
 		System.out.print(remoteUrl + " wrote: " + msg + "\n");
-		
+		//trySleep();
 		//TODO logig to say yes
 		tryMessageToClient("here Server, your can park");
 		
@@ -56,7 +56,7 @@ public class ServerTaskThread extends Thread {
 	 * the terminal.
 	 */
 	public void trySleep() {
-		trySleep(new Random().nextInt(5) * 1000);
+		trySleep(new Random().nextInt(5) * 100);
 	}
 	
 	/**
