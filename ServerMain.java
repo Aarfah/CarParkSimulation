@@ -14,13 +14,25 @@ public class ServerMain {
 		ServerSocket serverSocket = null;
 		int port = 1337;
 		serverSocket = getServerSocketBy(port);
+		Timer systemTimer = new Timer();
 		while (true) {
 			try {
-				startServer(serverSocket);
+				startServer(serverSocket, systemTimer);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Start the server by given Socket.
+	 * 
+	 * @param serverSocket the socket to communicate with the server.
+	 * @throws IOException if connection from client failed by socket.
+	 */
+	private static void startServer(ServerSocket serverSocket, Timer sysTimer) throws IOException {
+		Socket client = waitOnLog(serverSocket);
+		ServerTaskThread st = new ServerTaskThread(client, sysTimer);
 	}
 	
 	/**
@@ -38,17 +50,6 @@ public class ServerMain {
 			System.exit(1);
 		}
 		return serverSocket;
-	}
-
-	/**
-	 * Start the server by given Socket.
-	 * 
-	 * @param serverSocket the socket to communicate with the server.
-	 * @throws IOException if connection from client failed by socket.
-	 */
-	private static void startServer(ServerSocket serverSocket) throws IOException {
-		Socket client = waitOnLog(serverSocket);
-		ServerTaskThread st = new ServerTaskThread(client);
 	}
 	
 	/**

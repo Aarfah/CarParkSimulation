@@ -22,11 +22,11 @@ public class ClientMain {
 				+" and connecting to: "
 				+ ip + ":" + port);
 		try {
-			Client client = new Client(ip, port);
-			//client.handle(tag + "\n");
-			System.out.println("Conected to: " + ip + ":" + port);
+			Client client = new Client(ip, port, tag, arrivaleTime, parkTime);
+			client.testRun();
+			System.out.println(tag + " Connected to: " + ip + ":" + port);
 		} catch (IOException ex) {
-			System.err.println("Connection to: " + ip + ":" + port + " failed.");
+			System.err.println("NO SERVER: Connection to: " + ip + ":" + port + " failed.");
 		}
 	}
 	
