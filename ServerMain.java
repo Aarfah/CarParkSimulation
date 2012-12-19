@@ -17,7 +17,7 @@ public class ServerMain {
 		Timer systemTimer = new Timer();
 		while (true) {
 			try {
-				startServer(serverSocket, systemTimer);
+				startServerThread(serverSocket, systemTimer);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -25,14 +25,14 @@ public class ServerMain {
 	}
 	
 	/**
-	 * Start the server by given Socket.
+	 * Starts the server thread by given Socket and the system timer.
 	 * 
 	 * @param serverSocket the socket to communicate with the server.
 	 * @throws IOException if connection from client failed by socket.
 	 */
-	private static void startServer(ServerSocket serverSocket, Timer sysTimer) throws IOException {
+	private static void startServerThread(ServerSocket serverSocket, Timer sysTimer) throws IOException {
 		Socket client = waitOnLog(serverSocket);
-		ServerTaskThread st = new ServerTaskThread(client, sysTimer);
+		ServerThread st = new ServerThread(client, sysTimer);
 	}
 	
 	/**
