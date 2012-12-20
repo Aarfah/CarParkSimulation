@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Server task thread to handle more client request at ones.
@@ -13,17 +15,19 @@ import java.net.Socket;
 public class ServerThread extends Thread {
 	private BufferedReader bufferedReader;
 	private PrintWriter printWriter;
+	private String carId;
+	private CarPark carPark;
 	private Socket socket;
 	private Timer serverTimer;
-	private String id;
 	
 	/**
 	 * Constructor of the ServerThread.
 	 * 
 	 * @param socket the socket from the client.
 	 */
-	public ServerThread(Socket socket, Timer serverTimer) {
+	public ServerThread(Socket socket, CarPark carPark, Timer serverTimer) {
 		this.socket = socket;
+		this.carPark = carPark;
 		this.serverTimer = serverTimer;
 		initBufferedReader();
 		initPrintWriter();
@@ -32,15 +36,29 @@ public class ServerThread extends Thread {
 	
 	/**
 	 * Overrunning methode from Thread.java.
-	 * Runs the server task thread.
+	 * Runs the task of a car park server thread.
 	 */
 	public void run() {
-		String id = readMessage();
-		System.out.println("This is my id: " + id);
-		String greeting = readMessage();
-		System.out.println("This is a Greeting: " + greeting);
-		sendTime();
-		//sendMessage("Fick Dick");
+		this.carId = readMessage();
+		int time = (int) serverTimer.getTime();
+		System.out.println("System time:" + time + " : " + "Connected: " + carId);
+		sendMessage(time + "");
+		readMessage();
+		while (!canPark()) {
+			sleep(60);
+		}
+		int free = carPark.getIndexOfFreeSlot();
+		carPark.addCarIdToParking(free, carId);
+		System.out.println("System time:" + serverTimer.getTime() +" : " + "Parking: " + carId);
+		System.out.println("Place: " + (free + 1));
+		sendMessage("OK go");
+		String leave = readMessage();
+		time = (int) serverTimer.getTime();
+		System.out.println("System time:" + time +" : "+ "Unpark: " + carId);
+		System.out.println("Place: " + (free + 1));
+		carPark.removeCarFromParking(free);
+		sendMessage(time + "");
+		closeSocket();
 	}
 	
 	/**
@@ -68,7 +86,7 @@ public class ServerThread extends Thread {
 		} catch (IOException ex) {
 			System.out.println("Cant read message");
 		}
-		return msg;//TODO better handling
+		return msg;
 	}
 	
 	/**
@@ -90,6 +108,23 @@ public class ServerThread extends Thread {
 		} catch (InterruptedException ex) {
 			System.err.println("Cant sleep this time.");
 		}	
+	}
+	
+	private boolean canPark() {
+		boolean parkOk = false;
+		parkOk = carPark.isParkingSlotFree();
+		return parkOk;
+	}
+	
+	/**
+	 * Closes the connection to the socket of the client.
+	 */
+	private void closeSocket() {
+		try {
+			socket.close();
+		} catch (IOException ex) {
+			System.err.println("Socket cant be closed.");
+		}
 	}
 	
 	/**

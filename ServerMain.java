@@ -14,10 +14,11 @@ public class ServerMain {
 		ServerSocket serverSocket = null;
 		int port = 1337;
 		serverSocket = getServerSocketBy(port);
+		CarPark carPark = new CarPark();
 		Timer systemTimer = new Timer();
 		while (true) {
 			try {
-				startServerThread(serverSocket, systemTimer);
+				startServerThread(serverSocket, carPark, systemTimer);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -30,9 +31,9 @@ public class ServerMain {
 	 * @param serverSocket the socket to communicate with the server.
 	 * @throws IOException if connection from client failed by socket.
 	 */
-	private static void startServerThread(ServerSocket serverSocket, Timer sysTimer) throws IOException {
+	private static void startServerThread(ServerSocket serverSocket, CarPark carPark, Timer sysTimer) throws IOException {
 		Socket client = waitOnLog(serverSocket);
-		ServerThread st = new ServerThread(client, sysTimer);
+		ServerThread st = new ServerThread(client, carPark, sysTimer);
 	}
 	
 	/**

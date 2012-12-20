@@ -13,8 +13,10 @@ import java.util.logging.Logger;
  * @author Dennis Hägler
  */
 public class Client extends Thread {
+	/**A buffered reader to read strings from the Server*/
 	private BufferedReader bufferedReader;
 	
+	/**A print writer to write strings to the server*/
 	private PrintWriter printWriter;
 	
 	/**Ip to connect to server.*/
@@ -56,23 +58,22 @@ public class Client extends Thread {
 		this.parkingTime = parkingTime;
 		initBufferedReader();
 		initPrintWriter();
-		testRun();
+		simulateParking();
 	}
+	
 	/**
-	 * Testmethode to run a client on a server.
+	 * Simulates a parking on a car park server.
 	 */
-	public void testRun() {
-		System.out.println("--------------------------------------------");
-		System.out.println("\nMy Tag: " + tag 
-				+ " my time: " + arrivaleTime 
-				+ " my stay time:" + parkingTime);
-		System.out.println("Connected to: "	+ ip + ":" + port);
+	public void simulateParking() {
 		sendMessage(tag);
-		sendMessage("Hi server, here is " + tag
-				+ ". Want to park on " + arrivaleTime
-				+ " h for "	+ parkingTime +" minutes.");
-		String time = readMessage();
-		System.out.println("The time from Server: " + time);
+		int conTime = readTimeFromServer();
+		rest(conTime);
+		sendMessage("Want to park");
+		String permission = readMessage();
+		park(parkingTime);
+		sendMessage(tag + " wants to leave.");
+		int discTime = readTimeFromServer();
+		System.out.println(toString(conTime, discTime));
 	}
 
 	/**
@@ -88,7 +89,6 @@ public class Client extends Thread {
 
 	/**
 	 * Reads a message from the server.
-	 * 
 	 * Waits until a string is sent by the server ended by an newline.
 	 * 
 	 * @return the message from the server.
@@ -123,6 +123,28 @@ public class Client extends Thread {
 	}
 	
 	/**
+	 * Lets the client rest to wait.
+	 */
+	private void rest(int serverTime) {
+		if (serverTime < arrivaleTime) {
+			park(arrivaleTime - serverTime);
+		}
+	}
+	
+	/**
+	 * Parks the car for a time.
+	 * 
+	 * @param time the time how long to park.
+	 */
+	private void park(int time) {
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	/**
 	 * Initialize the buffered reader.
 	 */
 	private void initBufferedReader() {
@@ -144,6 +166,44 @@ public class Client extends Thread {
 		} catch (IOException ex) {
 			System.out.println("Cant init print writer");
 		}
+	}
+	
+	/**
+	 * Returns all important facts of the client printable for the terminal.
+	 *
+	 * @param connectTime the time were the client connected to the server.
+	 * @param disconnectTime the time were the client disconnected from the 
+	 *						 server.
+	 * @return all important facts of the client for the terminal.
+	 */
+	public String toString(int connectTime, int disconnectTime) {
+		String output = "";
+		output += String.format("--------------------------------------------\n");
+		output += String.format("\nMy Tag: " + tag + "\n"
+				+ "My park start wish: " + arrivaleTime + "\n"
+				+ "My stay time: " + parkingTime + "\n");
+		output += String.format("Connected to: " + ip + ":" + port + "\n");
+		output += String.format("Connected on: " + connectTime +"\n");
+		output += String.format("Disconnected on: " + disconnectTime + "\n");
+		output += String.format("--------------------------------------------\n");
+		output += String.format("############################################\n");
+		return output;
+	}
+	
+	/**
+	 * Returns all important facts of the client printable for the terminal.
+	 * 
+	 * @return all important facts of the client for the terminal.
+	 */
+	public String toString() {
+		String output = "";
+		output += String.format("--------------------------------------------\n");
+		output += String.format("\nMy Tag: " + tag + "\n"
+				+ "My time: " + arrivaleTime + "\n"
+				+ "My stay time:" + parkingTime + "\n");
+		output += String.format("Connected to: " + ip + ":" + port + "\n");
+		output += String.format("--------------------------------------------\n");
+		return output;
 	}
 }
 

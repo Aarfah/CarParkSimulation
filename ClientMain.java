@@ -8,7 +8,6 @@ import java.io.IOException;
  * @author Dennis Hägler
  */
 public class ClientMain {
-	//TODO Zeit bis Clientstartet
 	public static void main(String[] args) {
 		String ip = "127.0.0.1";
 		int port = 1337;
@@ -17,7 +16,6 @@ public class ClientMain {
 		int parkTime = getParkingTime(args[0]);
 		try {
 			Client client = new Client(ip, port, tag, arrivaleTime, parkTime);
-			System.out.println(tag + " Connected to: " + ip + ":" + port);
 		} catch (IOException ex) {
 			System.err.println("NO SERVER: Connection to: " + ip + ":" + port + " failed.");
 		}
@@ -82,10 +80,10 @@ public class ClientMain {
 	 */
 	private static int getTime(String s) {
 		String[] result = s.split(":");
-		int hour = Integer.parseInt(result[0]) * 60;
+		int hour = Integer.parseInt(result[0]) * 600; // 1 h = 600ms
 		int minute = 0;
 		try {
-			minute = Integer.parseInt(result[1]) * 60;
+			minute = Integer.parseInt(result[1]) * 10; // 1 min = 10ms
 		} catch(ArrayIndexOutOfBoundsException oob) {
 		}
 		return hour + minute;
